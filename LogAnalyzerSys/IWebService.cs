@@ -2,6 +2,9 @@
 {
     public interface IWebService
     {
+        /// <summary>
+        /// 最后错误消息
+        /// </summary>
         string LastError { get; set; }
 
         /// <summary>
