@@ -4,6 +4,6 @@
     {
         string LastError { get; set; }
 
-        void LogError(string v);
+        void LogError(string msg);
     }
 }
