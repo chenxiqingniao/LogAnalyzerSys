@@ -7,38 +7,50 @@ namespace LogAnalyzerSys.UnitTests
     [TestClass]
     public class LogAnalyzerWebServiceTests
     {
+        IWebService _webService;
+
+        const string ErrorMessage = "Filename too short:abc.txt";
+
+        [TestInitialize]
+        public void Setup()
+        {
+            _webService = Substitute.For<IWebService>();
+        }
+
         [TestMethod]
         public void Analyze_TooShortFileName_CallsWebService()
         {
-            var webService = Substitute.For<IWebService>();
-            const string errorMessage = "Filename too short:abc.txt";
-            var log = new LogAnalyzer(webService);
+            var log = new LogAnalyzer(_webService);
+
             var tooShortFileName = "abc.txt";
-            webService.When(x => x.LogError(errorMessage)).Do(x => webService.LastError = errorMessage);
+
+            _webService.When(x => x.LogError(ErrorMessage)).Do(x => _webService.LastError = ErrorMessage);
+
             log.Analyze(tooShortFileName);
-            Assert.AreEqual(errorMessage, webService.LastError);
+
+            Assert.AreEqual(ErrorMessage, _webService.LastError);
         }
 
         [TestMethod]
         public void Analyze_WebServiceThrows_SendsEmail()
         {
-            var webService = Substitute.For<IWebService>();
-
             var emailService = Substitute.For<IEmailService>();
 
-            var log = new LogAnalyzer(webService, emailService);
+            var log = new LogAnalyzer(_webService, emailService);
 
             var tooShortFileName = "abc.txt";
 
-            const string errorMessage = "Filename too short:abc.txt";
-
-            webService.When(x => x.LogError(errorMessage)).Throw(new Exception());
+            _webService.When(x => x.LogError(ErrorMessage)).Throw(new Exception());
 
             log.Analyze(tooShortFileName);
 
             Assert.AreEqual("a", emailService.To);
+
             Assert.AreEqual("fake exception", emailService.Body);
+
             Assert.AreEqual("subject", emailService.Subject);
         }
+
+        
     }
 }

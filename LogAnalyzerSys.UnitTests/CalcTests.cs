@@ -46,7 +46,11 @@ namespace LogAnalyzerSys.UnitTests
         {
             _instance.Add(5.0, -5.0);
             _instance.Received().Add(5, Arg.Any<double>());
-            _instance.Received().Add(5, Arg.Is<double>(x=>x<0));
+            _instance.Received().Add(5, Arg.Is<double>(x => x < 0));
+            _instance.Model.Returns("A","B","C");
+            Assert.AreEqual("A", _instance.Model);
+            Assert.AreEqual("B", _instance.Model);
+            Assert.AreEqual("C", _instance.Model);
         }
     }
 }
