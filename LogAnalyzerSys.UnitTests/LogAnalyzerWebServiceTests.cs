@@ -11,6 +11,8 @@ namespace LogAnalyzerSys.UnitTests
 
         const string ErrorMessage = "Filename too short:abc.txt";
 
+        const string TooShortFileName = "abc.txt";
+
         [TestInitialize]
         public void Setup()
         {
@@ -22,13 +24,9 @@ namespace LogAnalyzerSys.UnitTests
         {
             var log = new LogAnalyzer(_webService);
 
-            var tooShortFileName = "abc.txt";
+            log.Analyze(TooShortFileName);
 
-            _webService.When(x => x.LogError(ErrorMessage)).Do(x => _webService.LastError = ErrorMessage);
-
-            log.Analyze(tooShortFileName);
-
-            Assert.AreEqual(ErrorMessage, _webService.LastError);
+            _webService.Received().LogError(ErrorMessage);//WebService作为摸你对象被预期调用方法
         }
 
         [TestMethod]
@@ -38,13 +36,11 @@ namespace LogAnalyzerSys.UnitTests
 
             var log = new LogAnalyzer(_webService, emailService);
 
-            var tooShortFileName = "abc.txt";
+            _webService.When(x => x.LogError(ErrorMessage)).Throw(new Exception());//webService作为桩对象使用
 
-            _webService.When(x => x.LogError(ErrorMessage)).Throw(new Exception());
+            log.Analyze(TooShortFileName);
 
-            log.Analyze(tooShortFileName);
-
-            Assert.AreEqual("a", emailService.To);
+            Assert.AreEqual("a", emailService.To);//EmailService作为模拟对象使用
 
             Assert.AreEqual("fake exception", emailService.Body);
 
