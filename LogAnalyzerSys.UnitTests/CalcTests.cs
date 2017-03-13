@@ -6,7 +6,7 @@ namespace LogAnalyzerSys.UnitTests
     [TestClass]
     public class CalcTests
     {
-        ICalculator _instance;
+        ICalculator _instance;//计算接口
         [TestInitialize]
         public void Setup()
         {
